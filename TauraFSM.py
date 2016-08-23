@@ -1,15 +1,16 @@
-from Ball import *
-from OtherRobot import *
-from Pole import *
+from Classes.Ball import *
+from Classes.OtherRobot import *
+from Classes.Pole import *
 
 from Constants import *
 
 from MindInterface import Simulation
 from MindInterface.config import *
 
-class TauraFSM():
+class TauraFSM:
     """ """
 
+    # Default arguments
     def __init__(self, currentState, ball, otherRobot, pole1, pole2, tauraRobot):
         self.currentState = currentState
         self.ball = ball
@@ -21,11 +22,11 @@ class TauraFSM():
     # FSM itself
     def switch(self, state):
         if   state == 0: self.currentState = self.ball_search()
-        elif state == 1: self.currentState = ball_go_after()
-        elif state == 2: self.currentState = opposite_goal_search()
-        elif state == 3: self.currentState = opposite_to_goal()
-        elif state == 4: self.currentState = kick()
-        elif state == 5: self.currentState = ball_intercept()
+        elif state == 1: self.currentState = self.ball_go_after()
+        elif state == 2: self.currentState = self.opposite_goal_search()
+        elif state == 3: self.currentState = self.opposite_to_goal()
+        elif state == 4: self.currentState = self.kick()
+        elif state == 5: self.currentState = self.ball_intercept()
         else:
             print("ERROR!")
         return self.currentState
@@ -37,7 +38,7 @@ class TauraFSM():
 
         if self.ball:
             do_measure()
-            if otherRobot.dist_ball:
+            if self.otherRobot.distance:
                 if self.ball.position.r > self.otherRobot.dist_ball + THRESHOLD_TO_INTERCEPT:
                     return 5
             return 1
@@ -46,7 +47,7 @@ class TauraFSM():
             return 0
 
     # State 1
-    def ball_go_after():
+    def ball_go_after(self):
         object_search()
         if self.ball.r_last_seen > BALL_RADIUS:
             walk_to(self.ball.a_last_seen)
@@ -57,7 +58,7 @@ class TauraFSM():
             return 0
 
     # State 2
-    def opposite_goal_search():
+    def opposite_goal_search(self):
         # global pole1
         # global pole2
         # global balldoubt
@@ -76,7 +77,7 @@ class TauraFSM():
             return 0
 
     # State 3
-    def opposite_to_goal():
+    def opposite_to_goal(self):
         object_search()
 
         if self.ball.doubt < BALL_MEMORY_CYCLE:
@@ -95,7 +96,7 @@ class TauraFSM():
             return 0
 
     # State 4
-    def kick():
+    def kick(self):
         stop_to_walk()
         self.tauraRobot.updateSimulation()
         time.sleep(0.1)
@@ -109,7 +110,7 @@ class TauraFSM():
         return 0
 
     # State 5
-    def ball_intercept():
+    def ball_intercept(self):
         # global ball_doubt
         # global ball_a_last_seen
         # global robot1
@@ -156,6 +157,7 @@ class TauraFSM():
 
         goal_doubt += GOAL_INCREASES_GOALDOUBT
         self.ball.doubt += BALL_INCREASES_BALLDOUBT
+
         for obj in world.objects_list:
             if obj.kind == "ball":
                 if self.currentState == 0 or self.currentState == 1:
@@ -179,7 +181,7 @@ class TauraFSM():
             ball_free()
 
     # Subprocess 1
-    def ball_look_around():
+    def ball_look_around(self):
         # global ball_first_look
         # global TILT_MIN
         # global TILT_MAX
@@ -213,7 +215,7 @@ class TauraFSM():
             turn_around()
 
     # Subprocess 2
-    def turn_around():
+    def turn_around(self):
         # global ball_look_cycle
         # global ball_first_look
         global turn_to
@@ -230,11 +232,11 @@ class TauraFSM():
         self.tauraRobot.setMovementVector(Point2(r=1,a=direction,phi=direction))
 
     # Subprocess 4
-    def stop_to_walk():
+    def stop_to_walk(self):
         self.tauraRobot.setMovementVector(Point2())
 
     # Subprocess 5
-    def opposite_goal_look_around():
+    def opposite_goal_look_around(self):
         global increasing_pan
         global pan
         global goal_look_cycle
@@ -255,20 +257,20 @@ class TauraFSM():
             self.ball.turn_around()
 
     # Subprocess 6
-    def ball_turn_around():
+    def ball_turn_around(self):
         global turnto
         self.tauraRobot.setMovementVector(Point2(r=1, a=pi/2*turn_to,phi=-pi/2*turn_to))
 
     # Subprocess 7
-    def left_kick():
+    def left_kick(self):
         self.tauraRobot.setKick( 1)
 
     # Subprocess 8
-    def right_kick():
+    def right_kick(self):
         self.tauraRobot.setKick(-1)
 
     # Subprocess 9 - VERIFICAR AQUI.
-    def ball_memorize(ball):
+    def ball_memorize(self):
         global ball_a_last_seen
         global ball_r_last_seen
         global ball_doubt
@@ -282,7 +284,7 @@ class TauraFSM():
         self.ball.look_cycle = 0
 
     # Subprocess 10
-    def ball_free():
+    def ball_free(self):
         global ball
         global ball_a_last_seen
         global ball_r_last_seen
@@ -296,7 +298,7 @@ class TauraFSM():
         # Dúvida aqui. O objeto bola deve desaparecer?
 
     # Subprocess 11
-    def goal_memorize():
+    def goal_memorize(self):
         global pole1_a_last_seen
         global pole1_r_last_seen
         global pole2_a_last_seen
@@ -328,7 +330,7 @@ class TauraFSM():
                 turn_to = -1
 
     # Subprocess 12
-    def goal_free():
+    def goal_free(self):
         global pole1
         global pole2
         global pole1_a_last_seen
@@ -346,7 +348,7 @@ class TauraFSM():
         self.pole2 = None   # DÚVIDA AQUI TB.
 
     # Subprocess 12
-    def do_measure(otherRobot, ball):
+    def do_measure(self):
         # global robot1
         # global robot1_dist_ball
 
@@ -359,7 +361,7 @@ class TauraFSM():
             otherRobot.dist_ball = None
 
     # Subprocess 13
-    def do_direction():
+    def do_direction(self):
         global a_intercept
         global robot1
         global robot1_dist_ball

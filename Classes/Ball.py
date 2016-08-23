@@ -1,5 +1,10 @@
-class Ball():
+from MindInterface.Model import BaseObject
+
+class Ball(BaseObject):
+
     def __init__(self, alpha, distance, closer, seen):
+        super(pos, BALL).__init__()
+
         self.distance = distance
         self.alpha = alpha
         self.closer = closer
