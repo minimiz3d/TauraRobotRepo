@@ -6,6 +6,7 @@ from MindInterface.config import *
 from Classes.Ball import *
 from Classes.OtherRobot import *
 from Classes.Pole import *
+from Classes.Belief import *
 
 from Constants import *
 
@@ -14,6 +15,7 @@ pan  = PAN_MIN
 tilt = TILT_MIN
 increasing_pan = 1
 
+# Essas variáveis devem ser atributos na classe TauraFSM?
 turn_to = 1
 a_intercept = 0
 direction = 0
@@ -27,9 +29,10 @@ ball = Ball(20, 1, 1, 1)
 otherRobot = OtherRobot(1, 25, "blue")
 pole1 = Pole(1, 30, True, True, True)
 pole2 = Pole(1, 33, True, True, True)
+belief = Belief()
 
 robot = Simulation.start()
-tauraPlayerFSM = TauraFSM(state, ball, otherRobot, pole1, pole2, robot)
+tauraPlayerFSM = TauraFSM(belief, state, ball, otherRobot, pole1, pole2, robot)
 
 # Simulation itself
 while robot.updateSimulation():
@@ -40,7 +43,7 @@ while robot.updateSimulation():
         sys.exit("No world received")
         state = tauraPlayerFSM.switch(state)
 
-        # DEBUGG
+        # DEB
         #print("ball_look_cycle = ", ball_look_cycle)
         #print("goal_look_cycle = ", goal_look_cycle)
         print("state = ", state)

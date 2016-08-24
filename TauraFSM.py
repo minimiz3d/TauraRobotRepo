@@ -1,6 +1,7 @@
 from Classes.Ball import *
 from Classes.OtherRobot import *
 from Classes.Pole import *
+from Classes.Belief import *
 
 from Constants import *
 
@@ -11,7 +12,8 @@ class TauraFSM:
     """ """
 
     # Default arguments
-    def __init__(self, currentState, ball, otherRobot, pole1, pole2, tauraRobot):
+    def __init__(self, belief,currentState, ball, otherRobot, pole1, pole2, tauraRobot):
+        self.belief = belief
         self.currentState = currentState
         self.ball = ball
         self.otherRobot = otherRobot
@@ -37,102 +39,105 @@ class TauraFSM:
         self.object_search()
 
         if self.ball:
-            do_measure()
+            self.do_measure()
+
             if self.otherRobot.distance:
-                if self.ball.position.r > self.otherRobot.dist_ball + THRESHOLD_TO_INTERCEPT:
+                if self.ball.position.r > self.otherRobot.distance + THRESHOLD_TO_INTERCEPT:
                     return 5
+
             return 1
+
         else:
-            self.ball.look_around()
+            self.ball_look_around()
             return 0
 
     # State 1
     def ball_go_after(self):
-        object_search()
-        if self.ball.r_last_seen > BALL_RADIUS:
-            walk_to(self.ball.a_last_seen)
+        self.object_search()
+
+        if self.belief.ball_r_last_seen > BALL_RADIUS:
+            walk_to(self.belief.ball_a_last_seen)
             return 1
-        if self.ball.r_last_seen > 5:
+
+        if self.belief.ball_r_last_seen > 5:
             return 2
+
         else:
             return 0
 
     # State 2
     def opposite_goal_search(self):
-        # global pole1
-        # global pole2
-        # global balldoubt
+        self.object_search()
 
-        # global goal_look_cycle
-
-        object_search()
-        if self.ball.doubt < BALL_MEMORY_CYCLE:
+        if self.belief.ball_doubt < BALL_MEMORY_CYCLE:
             if self.pole1 or self.pole2:
                 return 3
             else:
-                opposite_goal_look_around()
+                self.opposite_goal_look_around()
                 return 2
         else:
-            goal_look_cycle = 0
+            self.belief.goal_look_cycle = 0
             return 0
 
     # State 3
     def opposite_to_goal(self):
-        object_search()
+        self.object_search()
 
-        if self.ball.doubt < BALL_MEMORY_CYCLE:
+        if self.belief.ball_doubt < BALL_MEMORY_CYCLE:
             if self.pole1 and self.pole2:
                 if(self.pole1.position.a+self.pole2.position.a)/2>0-THRESHOLD/3 and (self.pole1.position.a+self.pole2.position.a)/2<0+THRESHOLD/3:
                     return 4
-                ball_turn_around()
+                self.ball_turn_around()
+
             elif self.pole1:
                 if self.pole1.position.a>0-THRESHOLD/3 and self.pole1.position.a<0+THRESHOLD/3:
                     return 4
-                ball_turn_around()
+
+                self.ball_turn_around()
+
             else:
                 return 2
+
             return 3
+
         else:
             return 0
 
     # State 4
     def kick(self):
-        stop_to_walk()
+        self.stop_to_walk()
         self.tauraRobot.updateSimulation()
         time.sleep(0.1)
-        if self.ball.a_last_seen > 0:
-            left_kick()
+
+        if self.belief.ball_a_last_seen > 0:
+            self.left_kick()
+
         else:
-            right_kick()
-        ball_free()
+            self.right_kick()
+
+        self.ball_free()
         self.tauraRobot.updateSimulation()
         time.sleep(0.1)
         return 0
 
     # State 5
     def ball_intercept(self):
-        # global ball_doubt
-        # global ball_a_last_seen
-        # global robot1
-
-        # global a_intercept
-        # global direction
-
         # from TauraPlayerAI_sim import direction, a_intercept ???
+        self.object_search()
 
-        object_search()
         if self.otherRobot.position.a > self.ball.a_last_seen-THRESHOLD_ALIGN_BALL_TO_ROBOT and otherRobot.position.a < self.ball.a_last_seen+THRESHOLD_ALIGN_BALL_TO_ROBOT:
-            direction = 0
+            self.direction = 0
             return 1
         if direction:
-            walk_to(a_intercept)
+            self.walk_to(self.a_intercept)
             if direction > 4:
-                a_intercept = 0
-            direction+=1
+                self.a_intercept = 0
+            self.direction+=1
         else:
-            do_direction()
-            direction = 1
-        if self.ball.doubt < BALL_MEMORY_CYCLE:
+            self.do_direction()
+            self.direction = 1
+
+        if self.belief.ball_doubt < BALL_MEMORY_CYCLE:
             return 5
         else:
             direction = 0
@@ -141,44 +146,33 @@ class TauraFSM:
     """ SUBPROCESSES """
     # Subprocess 0
     def object_search(self):
-        # global state
-
-        # global ball_doubt
-        # global goal_doubt
-        # global ball
-
-        # global pole1
-        # global pole2
-
-        # global robot1
-
         pole_found  = 0
         robot_found = 0
 
-        goal_doubt += GOAL_INCREASES_GOALDOUBT
-        self.ball.doubt += BALL_INCREASES_BALLDOUBT
+        self.belief.goal_doubt += GOAL_INCREASES_GOALDOUBT
+        self.belief.ball_doubt += BALL_INCREASES_BALLDOUBT
 
         for obj in world.objects_list:
             if obj.kind == "ball":
                 if self.currentState == 0 or self.currentState == 1:
                     self.ball = obj
-                    self.ball.memorize(self.ball)
+                    self.ball_memorize(self.ball)
             if obj.kind == "pole":
                 pole_found +=1
                 if pole_found == 1:
                     pole1 = obj
                 if pole_found == 2:
                     pole2 = obj
-                goal_memorize()
+                self.goal_memorize()
             if obj.kind == "robot":
                 robot_found+=1
                 if robot_found == 1:
                     robot1 = obj
 
-        if goal_doubt > GOAL_MEMORY_CYCLE:
-            goal_free()
-        if self.ball.doubt > BALL_MEMORY_CYCLE:
-            ball_free()
+        if self.belief.goal_doubt > GOAL_MEMORY_CYCLE:
+            self.goal_free()
+        if self.belief.ball_doubt > BALL_MEMORY_CYCLE:
+            self.ball_free()
 
     # Subprocess 1
     def ball_look_around(self):
@@ -190,19 +184,19 @@ class TauraFSM:
         # global TILT_STEP
         # global PAN_STEP
         # global ball_look_cycle
-        global increasing_pan
-        global pan
-        global tilt
+        # global increasing_pan
+        # global pan
+        # global tilt
 
         self.tauraRobot.setNeck((pan,tilt))
-        if self.ball.first_look == 1:
-            self.ball.first_look = 0
+        if self.belief.ball_first_look == 1:
+            self.belief.ball_first_look = 0
             pan = PAN_MIN
             tilt = TILT_MIN
             increasing_pan = 1
-            self.ball.look_cycle = 0
+            self.belief.ball_look_cycle = 0
         if(tilt <= TILT_MAX):
-            self.ball.look_cycle +=1
+            self.belief.ball_look_cycle +=1
             if pan < PAN_MAX and increasing_pan == 1:
                 pan += PAN_STEP
             elif pan > PAN_MIN and increasing_pan == 0:
@@ -212,7 +206,7 @@ class TauraFSM:
                 increasing_pan = not increasing_pan
         else:
             self.tauraRobot.setNeck((0,0))
-            turn_around()
+            self.turn_around()
 
     # Subprocess 2
     def turn_around(self):
@@ -221,11 +215,11 @@ class TauraFSM:
         global turn_to
 
         self.tauraRobot.setMovementVector(Point2(r=0, a=turn_to,phi=turn_to))
-        if  self.ball.look_cycle == 0:
-            self.ball.first_look = 1
-            stop_to_walk()
+        if  self.belief.ball_look_cycle == 0:
+            self.belief.ball_first_look = 1
+            self.stop_to_walk()
         else:
-            self.ball.look_cycle -=1
+            self.belief.ball_look_cycle -=1
 
     # Subprocess 3
     def walk_to(direction):
@@ -244,7 +238,7 @@ class TauraFSM:
         # global PAN_MAX
         # global PAN_STEP
 
-        if goal_look_cycle <= GOAL_LOOKING_CYCLE_MAX :
+        if self.belief.goal_look_cycle <= GOAL_LOOKING_CYCLE_MAX :
             if pan < PAN_MAX and increasing_pan == 1:
                 pan += PAN_STEP
             elif pan > PAN_MIN and increasing_pan == 0:
@@ -252,9 +246,9 @@ class TauraFSM:
             else:
                 increasing_pan = not increasing_pan
             self.tauraRobot.setNeck((pan,TILT_TO_LOOKING_GOAL))
-            goal_look_cycle+=1
+            self.belief.goal_look_cycle+=1
         else:
-            self.ball.turn_around()
+            self.ball_turn_around()
 
     # Subprocess 6
     def ball_turn_around(self):
@@ -277,11 +271,11 @@ class TauraFSM:
         global ball_first_look
         global ball_look_cycle
 
-        self.ball.a_last_seen = ball.position.a
-        self.ball.r_last_seen = ball.position.r
-        self.ball.doubt = 0
-        self.ball.first_look = 1
-        self.ball.look_cycle = 0
+        self.belief.ball_a_last_seen = ball.position.a
+        self.belief.ball_r_last_seen = ball.position.r
+        self.belief.ball_doubt = 0
+        self.belief.ball_first_look = 1
+        self.belief.ball_look_cycle = 0
 
     # Subprocess 10
     def ball_free(self):
@@ -290,11 +284,11 @@ class TauraFSM:
         global ball_r_last_seen
         global ball_doubt
 
-        self.ball.a_last_seen = 0
-        self.ball.r_last_seen = 0
-        self.ball.doubt = BALL_MEMORY_CYCLE
+        self.belief.ball_a_last_seen = 0
+        self.belief.ball_r_last_seen = 0
+        self.belief.ball_doubt = BALL_MEMORY_CYCLE
 
-        self.ball.ball = None
+        self.ball = None
         # Dúvida aqui. O objeto bola deve desaparecer?
 
     # Subprocess 11
@@ -309,22 +303,22 @@ class TauraFSM:
         global pole1
         global pole2
 
-        goal_look_cycle = 0
-        self.pole1.a_last_seen = pole1.position.a
-        self.pole1.r_last_seen = pole1.position.r
-        goal_doubt = 0
+        self.belief.goal_look_cycle = 0
+        self.belief.pole1_a_last_seen = pole1.position.a
+        self.belief.pole1_r_last_seen = pole1.position.r
+        self.belief.goal_doubt = 0
 
         if self.pole2:
-            self.pole2a_last_seen = pole2.position.a
-            self.pole2r_last_seen = pole2.position.r
+            self.belief.pole2_a_last_seen = pole2.position.a
+            self.belief.pole2_r_last_seen = pole2.position.r
 
-            if self.ball.doubt < BALL_MEMORY_CYCLE:
-                if(self.pole1.a_last_seen + self.pole2.a_last_seen)/2 < 0:
+            if self.belief.ball_doubt < BALL_MEMORY_CYCLE:
+                if(self.belief.pole1_a_last_seen + self.belief.pole2_a_last_seen)/2 < 0:
                     turn_to =  1
                 else:
                     turn_to = -1
-        elif self.ball.doubt < BALL_MEMORY_CYCLE:
-            if self.pole1.a_last_seen < 0:
+        elif self.belief.ball_doubt < BALL_MEMORY_CYCLE:
+            if self.belief.pole1_a_last_seen < 0:
                 turn_to =  1
             else:
                 turn_to = -1
@@ -339,11 +333,11 @@ class TauraFSM:
         global pole2_r_last_seen
         global goal_doubt
 
-        self.pole1.a_last_seen = 0
-        self.pole1.r_last_seen = 0
-        self.pole2.a_last_seen = 0
-        self.pole2.r_last_seen = 0
-        goal_doubt = GOAL_MEMORY_CYCLE
+        self.belief.pole1_a_last_seen = 0
+        self.belief.pole1_r_last_seen = 0
+        self.belief.pole2_a_last_seen = 0
+        self.belief.pole2_r_last_seen = 0
+        self.belief.goal_doubt = GOAL_MEMORY_CYCLE
         self.pole1 = None   # DÚVIDA AQUI TB.
         self.pole2 = None   # DÚVIDA AQUI TB.
 
@@ -353,12 +347,12 @@ class TauraFSM:
         # global robot1_dist_ball
 
         if otherRobot:
-            a = otherRobot.position.a
-            b = otherRobot.position.r
-            c = ball.r_last_seen
-            otherRobot.dist_ball = sqrt(b*b+c*c-2*b*c*cos(a))
+            a = self.otherRobot.position.a
+            b = self.otherRobot.position.r
+            c = self.belief.ball_r_last_seen
+            self.otherRobot.dist_ball = sqrt(b*b+c*c-2*b*c*cos(a))
         else:
-            otherRobot.dist_ball = None
+            self.otherRobot.distance = None
 
     # Subprocess 13
     def do_direction(self):
@@ -366,7 +360,7 @@ class TauraFSM:
         global robot1
         global robot1_dist_ball
 
-        if robot1.position.a > ball_r_last_seen:
+        if robot1.position.a > self.belief.ball_r_last_seen:
             a_intercept = -1.5*abs(robot1.position.a)
         else:
             a_intercept =  1.5*abs(robot1.position.a)
