@@ -2,7 +2,7 @@ from MindInterface.Model import BaseObject
 
 class Pole(BaseObject):
     def __init__(self, alpha, distance, opposite_to_goal, right_goal, seen):
-        super(pos, "pole").__init__()
+        super(pos = Point2(0,0), "pole").__init__()
 
         self.alpha = alpha
         self.distance = distance

@@ -15,3 +15,6 @@ class Belief:
         self.pole2_r_last_seen = pole2_r_last_seen
         self.goal_doubt = goal_doubt
         self.goal_look_cycle = goal_look_cycle
+
+        # Adicionar parâmetros da Ontologia (game_state por ex).
+        # No momento esta classe está com parâmetros de contexto.

@@ -135,7 +135,7 @@ class TauraFSM:
             self.direction+=1
         else:
             self.do_direction()
-            self.direction = 1
+            direction = 1
 
         if self.belief.ball_doubt < BALL_MEMORY_CYCLE:
             return 5
@@ -360,7 +360,9 @@ class TauraFSM:
         global robot1
         global robot1_dist_ball
 
-        if robot1.position.a > self.belief.ball_r_last_seen:
-            a_intercept = -1.5*abs(robot1.position.a)
+        # Need to determine the right distance using geometry
+        # a_intercept ???
+        if self.otherRobot.position.a > self.belief.ball_r_last_seen:
+            a_intercept = -1.5*abs(self.otherRobot.position.a)
         else:
-            a_intercept =  1.5*abs(robot1.position.a)
+            a_intercept =  1.5*abs(self.otherRobot.position.a)

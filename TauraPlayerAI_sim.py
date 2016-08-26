@@ -15,7 +15,7 @@ pan  = PAN_MIN
 tilt = TILT_MIN
 increasing_pan = 1
 
-# Essas variáveis devem ser atributos na classe TauraFSM?
+# Essas variáveis devem ser atributos na classe TauraFSM? Ou da Belief? 
 turn_to = 1
 a_intercept = 0
 direction = 0
