@@ -9,7 +9,7 @@ from MindInterface import Simulation
 from MindInterface.config import *
 
 class TauraFSM:
-    """ """
+    """ This class implements all the states and subprocesses used in the Taura Robot's AI """
 
     # Default arguments
     def __init__(self, belief, currentState, tauraRobot):
