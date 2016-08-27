@@ -15,7 +15,7 @@ pan  = PAN_MIN
 tilt = TILT_MIN
 increasing_pan = 1
 
-# Essas variáveis devem ser atributos na classe TauraFSM? Ou da Belief? 
+# Essas variáveis devem ser atributos na classe TauraFSM? Ou da Belief?
 turn_to = 1
 a_intercept = 0
 direction = 0
@@ -25,14 +25,15 @@ INITIAL_STATE = 0
 state = INITIAL_STATE
 
 # Initialize the TauraRobot and other objects in the simulation
-ball = Ball(20, 1, 1, 1)
-otherRobot = OtherRobot(1, 25, "blue")
-pole1 = Pole(1, 30, True, True, True)
-pole2 = Pole(1, 33, True, True, True)
-belief = Belief()
+# ball = Ball(20, 1, 1, 1)
+# ball = Ball(0, 0)
+# otherRobot = OtherRobot(1, 25, "blue")
+# pole1 = Pole(1, 30, True, True, True)
+# pole2 = Pole(1, 33, True, True, True)
+belief = Belief() # DÚVIDA AQUI.
 
 robot = Simulation.start()
-tauraPlayerFSM = TauraFSM(belief, state, ball, otherRobot, pole1, pole2, robot)
+tauraPlayerFSM = TauraFSM(belief, state, robot)
 
 # Simulation itself
 while robot.updateSimulation():

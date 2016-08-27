@@ -5,16 +5,9 @@ class Belief:
         self.ball_doubt = ball_doubt
         self.ball_look_cycle = ball_look_cycle
         self.ball_first_look = ball_first_look
-        self.ball_a_last_seen = ball_a_last_seen
-        self.ball_r_last_seen = ball_r_last_seen
 
         # Goal memories
-        self.pole1_a_last_seen = pole1_a_last_seen
-        self.pole1_r_last_seen = pole1_r_last_seen
-        self.pole2_a_last_seen = pole2_a_last_seen
-        self.pole2_r_last_seen = pole2_r_last_seen
         self.goal_doubt = goal_doubt
         self.goal_look_cycle = goal_look_cycle
-
-        # Adicionar parâmetros da Ontologia (game_state por ex).
-        # No momento esta classe está com parâmetros de contexto.
+        self.opposite_to_goal = opposite_to_goal
+        self.right_goal = right_goal
