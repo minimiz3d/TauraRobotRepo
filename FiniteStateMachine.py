@@ -23,8 +23,8 @@ def ball_search():
     if v.ball:
         do_measure()
 
-        if v.otherRobot.distance:
-            if v.ball.distance > v.otherRobot.distance + THRESHOLD_TO_INTERCEPT:
+        if v.oppositeRobot.distance:
+            if v.ball.distance > v.oppositeRobot.distance + THRESHOLD_TO_INTERCEPT:
                 return 5
 
         return 1
@@ -107,7 +107,7 @@ def ball_intercept():
     # from TauraPlayerAI_sim import direction, a_intercept ???
     object_search()
 
-    if v.otherRobot.alpha > v.ball.alpha-THRESHOLD_ALIGN_BALL_TO_ROBOT and v.otherRobot.alpha < v.ball.alpha+THRESHOLD_ALIGN_BALL_TO_ROBOT:
+    if v.oppositeRobot.alpha > v.ball.alpha-THRESHOLD_ALIGN_BALL_TO_ROBOT and v.oppositeRobot.alpha < v.ball.alpha+THRESHOLD_ALIGN_BALL_TO_ROBOT:
         v.direction = 0
         return 1
     if v.direction:

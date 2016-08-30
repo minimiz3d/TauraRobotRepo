@@ -39,8 +39,8 @@ def object_search():
         if obj.kind == "robot":
             robot_found+=1
             if robot_found == 1:
-                v.otherRobot = OtherRobot(obj.position.r, obj.position.a, "black")
-                # return otherRobot
+                v.oppositeRobot = OppositeRobot(obj.position.r, obj.position.a, "black")
+                # return oppositeRobot
 
 # Subprocess 1
 def ball_look_around():
@@ -145,19 +145,19 @@ def goal_free():
 
 # Subprocess 12
 def do_measure():
-    if otherRobot:
-        a = v.otherRobot.alpha
-        b = v.otherRobot.distance
+    if oppositeRobot:
+        a = v.oppositeRobot.alpha
+        b = v.oppositeRobot.distance
         c = v.ball.distance
-        v.otherRobot.distance = sqrt(b*b+c*c-2*b*c*cos(a))
+        v.oppositeRobot.distance = sqrt(b*b+c*c-2*b*c*cos(a))
     else:
-        v.otherRobot.distance = None
+        v.oppositeRobot.distance = None
 
 # Subprocess 13
 def do_direction():
     # Need to determine the right distance using geometry
 
-    if v.otherRobot.alpha > v.ball.distance:
-        v.a_intercept = -1.5*abs(v.otherRobot.position.a)
+    if v.oppositeRobot.alpha > v.ball.distance:
+        v.a_intercept = -1.5*abs(v.oppositeRobot.position.a)
     else:
-        v.a_intercept =  1.5*abs(v.otherRobot.position.a)
+        v.a_intercept =  1.5*abs(v.oppositeRobot.position.a)
