@@ -16,4 +16,4 @@ otherRobot = None
 pole1 = None
 pole2 = None
 belief = Belief(BALL_MEMORY_CYCLE, 0, 1,
-GOAL_MEMORY_CYCLE, 0)
+                GOAL_MEMORY_CYCLE, 0)
