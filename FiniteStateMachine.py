@@ -1,7 +1,9 @@
 # IN PROGRESS...
-
+from Subprocesses import *
 from setup import *
 import Variables as v
+
+currentState = v.currentState
 
 # FSM itself
 def switch(state):
@@ -38,7 +40,7 @@ def ball_go_after():
     object_search()
 
     if v.ball.distance > BALL_RADIUS:
-        walk_to(v.ball.distance)
+        walk_to()
         return 1
 
     if v.ball.distance > 5:

@@ -1,5 +1,12 @@
 # IN PROGRESS...
-from setup import *
+# from setup import *
+from Constants import *
+from Constants import *
+
+from Classes.config import *
+
+from MindInterface import Simulation
+from MindInterface.config import *
 import Variables as v
 
 """ SUBPROCESSES """
@@ -18,29 +25,30 @@ def object_search():
         ball_free()
 
     # Look for some object in the field (world)
-    for obj in world.objects_list:
+    for obj in v.world.objects_list:
         if obj.kind == "ball":
-            if currentState == 0 or currentState == 1:
-                v.ball = Ball(obj.position.r, obj.position.a)
-                # return ball
+            if v.currentState == 0 or v.currentState == 1:
+                print("testando: ", obj.position.r)
+                v.ball = Ball(obj.position.a, obj.position.r)
+                ball_memorize()
+
 
         if obj.kind == "pole":
             pole_found +=1
             if pole_found == 1:
-                v.pole1 = Pole(obj.position.r, obj.position.a)
-                # return pole1
+                v.pole1 = Pole(obj.position.a, obj.position.r)
+                goal_memorize()
 
             if pole_found == 2:
-                v.pole2 = Pole(obj.position.r, obj.position.a)
+                v.pole2 = Pole(obj.position.a, obj.position.r)
                 goal_memorize()
-                # return pole2
 
 
         if obj.kind == "robot":
             robot_found+=1
             if robot_found == 1:
-                v.oppositeRobot = OppositeRobot(obj.position.r, obj.position.a, "black")
-                # return oppositeRobot
+                v.oppositeRobot = OppositeRobot(obj.position.a, obj.position.r, "black")
+
 
 # Subprocess 1
 def ball_look_around():
@@ -145,7 +153,7 @@ def goal_free():
 
 # Subprocess 12
 def do_measure():
-    if oppositeRobot:
+    if v.oppositeRobot:
         a = v.oppositeRobot.alpha
         b = v.oppositeRobot.distance
         c = v.ball.distance

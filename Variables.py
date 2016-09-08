@@ -10,9 +10,11 @@ turn_to = 1
 a_intercept = 0
 direction = 0
 
+currentState = None
+world = None
 tauraRobot = None
 ball = None
-otherRobot = None
+oppositeRobot = None
 pole1 = None
 pole2 = None
 belief = Belief(BALL_MEMORY_CYCLE, 0, 1,

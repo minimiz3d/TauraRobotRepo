@@ -1,5 +1,5 @@
-from Classes.WorldObject import *
+from Classes.WorldObject import World_Object
 
-class Ball(WorldObject):
+class Ball(World_Object):
     def __init__(self, alpha, distance):
-        super(alpha, distance, self).__init__()
+        super(Ball, self).__init__(alpha, distance)
