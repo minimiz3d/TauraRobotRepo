@@ -1,4 +1,4 @@
-from WorldObject import *
+from Classes.WorldObject import *
 
 class Ball(WorldObject):
     def __init__(self, alpha, distance):

@@ -137,3 +137,8 @@ def drive_ball():
     #     return 2
     # if ()
     #     return 3
+
+# State 7 - IN PROGRESS.
+def ball_kickout():
+    print("IN PROGRESS")
+    # (...)

@@ -1,4 +1,4 @@
-from WorldObject import *
+from Classes.WorldObject import *
 
 class Pole(WorldObject):
     def __init__(self, alpha, distance):

@@ -12,4 +12,5 @@ class Belief:
         self.goal_look_cycle = goal_look_cycle
 
         # ONTOLOGY PARAMETERS
-        
+        # KickPower por ex.
+        # (...)
