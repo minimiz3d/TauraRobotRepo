@@ -1,4 +1,5 @@
-class Pole():
+from WorldObject import *
+
+class Pole(WorldObject):
     def __init__(self, alpha, distance):
-        self.alpha = alpha
-        self.distance = distance
+        super(alpha, distance, self).__init__()
