@@ -12,5 +12,4 @@ class Belief:
         self.goal_look_cycle = goal_look_cycle
 
         # ONTOLOGY PARAMETERS
-        # self.opposite_to_goal = opposite_to_goal
-        # self.right_goal = right_goal
+        
