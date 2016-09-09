@@ -1,12 +1,5 @@
 # IN PROGRESS...
-# from setup import *
-from Constants import *
-from Constants import *
-
-from Classes.config import *
-
-from MindInterface import Simulation
-from MindInterface.config import *
+from setup import *
 import Variables as v
 
 """ SUBPROCESSES """
@@ -28,10 +21,8 @@ def object_search():
     for obj in v.world.objects_list:
         if obj.kind == "ball":
             if v.currentState == 0 or v.currentState == 1:
-                print("testando: ", obj.position.r)
                 v.ball = Ball(obj.position.a, obj.position.r)
                 ball_memorize()
-
 
         if obj.kind == "pole":
             pole_found +=1
@@ -43,12 +34,10 @@ def object_search():
                 v.pole2 = Pole(obj.position.a, obj.position.r)
                 goal_memorize()
 
-
         if obj.kind == "robot":
             robot_found+=1
             if robot_found == 1:
                 v.oppositeRobot = OppositeRobot(obj.position.a, obj.position.r, "black")
-
 
 # Subprocess 1
 def ball_look_around():
@@ -84,7 +73,8 @@ def turn_around():
         v.belief.ball_look_cycle -=1
 
 # Subprocess 3
-def walk_to():
+def walk_to(direction):
+    v.direction = direction
     v.tauraRobot.setMovementVector(Point2(r=1,a=v.direction,phi=v.direction))
 
 # Subprocess 4
@@ -119,6 +109,7 @@ def right_kick():
 
 # Subprocess 9
 def ball_memorize():
+    # print("Memorizing ball...")
     v.belief.ball_doubt = 0
     v.belief.ball_look_cycle = 0
     v.belief.ball_first_look = 1
@@ -158,8 +149,8 @@ def do_measure():
         b = v.oppositeRobot.distance
         c = v.ball.distance
         v.oppositeRobot.distance = sqrt(b*b+c*c-2*b*c*cos(a))
-    else:
-        v.oppositeRobot.distance = None
+    # else:
+    #     v.oppositeRobot.distance = None
 
 # Subprocess 13
 def do_direction():

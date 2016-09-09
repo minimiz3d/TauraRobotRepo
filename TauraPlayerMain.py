@@ -1,3 +1,5 @@
+# IN PROGRESS...
+from FiniteStateMachine import *
 from setup import *
 import Variables as v
 import time
@@ -21,9 +23,9 @@ while v.tauraRobot.updateSimulation():
     #print("ball_look_cycle = ", ball_look_cycle)
     #print("goal_look_cycle = ", goal_look_cycle)
     print("state = ", v.currentState)
-    print("BALL:\n")
+    # print("BALL:\n")
     print("ball_doubt = ", v.belief.ball_doubt)
-    print("ball_distance = ", v.ball.distance)
+    # print("ball_distance = ", v.ball.distance)
     #print("pan = ", pan)
     #print("tilt = ", tilt)
     #print("ball_doubt = ", ball_doubt)
