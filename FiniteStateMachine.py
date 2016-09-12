@@ -4,6 +4,10 @@ from setup import *
 import time
 import Variables as v
 
+# States dictionary
+states = {'ball_search':0, 'ball_go_after':1, 'opposite_goal_search':2, 'opposite_to_goal':3, 'kick':4, \
+               'ball_intercept':5, 'drive_ball':6, 'ball_kickout':7}
+
 currentState = v.currentState
 
 # FSM itself
@@ -28,13 +32,13 @@ def ball_search():
 
         if v.oppositeRobot:
             if v.ball.distance > v.oppositeRobot.distance + THRESHOLD_TO_INTERCEPT:
-                return 5
+                return states['ball_intercept']
 
-        return 1
+        return states['ball_go_after']
 
     else:
         ball_look_around()
-        return 0
+        return states['ball_search']
 
 # State 1
 def ball_go_after():
@@ -42,13 +46,13 @@ def ball_go_after():
 
     if v.ball.distance > BALL_RADIUS:
         walk_to(v.ball.alpha)
-        return 1
+        return states['ball_go_after']
 
     if v.ball.distance > 5:
-        return 2
+        return states['opposite_goal_search']
 
     else:
-        return 0
+        return states['ball_search']
 
 # State 2
 def opposite_goal_search():
@@ -56,13 +60,13 @@ def opposite_goal_search():
 
     if v.belief.ball_doubt < BALL_MEMORY_CYCLE:
         if v.pole1 or v.pole2:
-            return 3
+            return states['opposite_to_goal']
         else:
             opposite_goal_look_around()
-            return 2
+            return states['opposite_goal_search']
     else:
         v.belief.goal_look_cycle = 0
-        return 0
+        return states['ball_search']
 
 # State 3
 def opposite_to_goal():
@@ -71,22 +75,22 @@ def opposite_to_goal():
     if v.belief.ball_doubt < BALL_MEMORY_CYCLE:
         if v.pole1 and v.pole2:
             if(v.pole1.alpha+v.pole2.alpha)/2>0-THRESHOLD/3 and (v.pole1.alpha+v.pole2.alpha)/2<0+THRESHOLD/3:
-                return 4
+                return states['kick']
             ball_turn_around()
 
         elif v.pole1:
             if v.pole1.alpha>0-THRESHOLD/3 and v.pole1.alpha<0+THRESHOLD/3:
-                return 4
+                return states['kick']
 
             ball_turn_around()
 
         else:
-            return 2
+            return states['opposite_goal_search']
 
-        return 3
+        return states['opposite_to_goal']
 
     else:
-        return 0
+        return states['ball_search']
 
 # State 4
 def kick():
@@ -103,7 +107,7 @@ def kick():
     ball_free()
     v.tauraRobot.updateSimulation()
     time.sleep(0.1)
-    return 0
+    return states['ball_search']
 
 # State 5
 def ball_intercept():
@@ -111,7 +115,7 @@ def ball_intercept():
 
     if v.oppositeRobot.alpha > v.ball.alpha-THRESHOLD_ALIGN_BALL_TO_ROBOT and v.oppositeRobot.alpha < v.ball.alpha+THRESHOLD_ALIGN_BALL_TO_ROBOT:
         v.direction = 0
-        return 1
+        return states['ball_go_after']
     if v.direction:
         walk_to(v.a_intercept)
         if v.direction > 4:
@@ -122,10 +126,10 @@ def ball_intercept():
         v.direction = 1
 
     if v.belief.ball_doubt < BALL_MEMORY_CYCLE:
-        return 5
+        return states['ball_intercept']
     else:
         v.direction = 0
-        return 0
+        return states['ball_search']
 
 # State 6 - IN PROGRESS.
 def drive_ball():
